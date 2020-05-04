@@ -10,16 +10,17 @@ def bilateral_conv_point(image, x, y, filter_sz, sigma_s, sigma_r):
     # Generates sub-image centered at (x, y) with filter_sz
     c = (filter_sz-1)//2
     sub_image = image[x-c : x+c+1, y-c : y+c+1]
+
+    # Gaussian Kernel
+    kernel = lambda x, sigma : (1/(2*np.pi*sigma*sigma)) * np.exp(-(x*x)/(2*sigma*sigma))
     
     # Spatial Gaussian
-    kernel_s = lambda x : (1/(2*np.pi*sigma_s*sigma_s)) * np.exp(-(x*x)/(2*sigma_s*sigma_s))
     gaussian_s = [[np.linalg.norm(np.array((i, j)) - np.array((filter_sz//2, filter_sz//2))) for j in range(filter_sz)] for i in range(filter_sz)]
-    gaussian_s = np.array([[kernel_s(x) for x in y] for y in gaussian_s])
+    gaussian_s = np.array([[kernel(x, sigma_s) for x in y] for y in gaussian_s])
     
     # Range Gaussian
-    kernel_r = lambda x : (1/(2*np.pi*sigma_r*sigma_r)) * np.exp(-(x*x)/(2*sigma_r*sigma_r))
     gaussian_r = [[sub_image[filter_sz//2, filter_sz//2] - sub_image[i, j] for j in range(filter_sz)] for i in range(filter_sz)]
-    gaussian_r = np.array([[kernel_r(x) for x in y] for y in gaussian_r])
+    gaussian_r = np.array([[kernel(x, sigma_r) for x in y] for y in gaussian_r])
     
     # Multiplies both Gaussian filters
     filter = gaussian_s * gaussian_r
