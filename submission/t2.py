@@ -76,6 +76,30 @@ def laplacian_filter(image, kernel_type, c):
     
     return res_image
 
+# Calculates Vignette filter from sigma values
+def vignette_filter(image, sigma_r, sigma_c):
+    N, M = image.shape
+    
+    # Gaussian Kernel function
+    kernel = lambda x, sigma : (1/(2*np.pi*sigma*sigma)) * np.exp(-(x*x)/(2*sigma*sigma))
+    
+    # Generating Guassian Kernels
+    w_row = [i - N//2 for i in range(N)]
+    w_row = np.array([np.array([kernel(x, sigma_r) for x in w_row])])
+    w_row = w_row.transpose()
+
+    w_col = [i - N//2 for i in range(M)]
+    w_col = np.array([np.array([kernel(x, sigma_c) for x in w_col])])
+    
+    # Multiplying to obtain matrix with same dimensions of the image
+    w = w_row.dot(w_col)
+    
+    # Getting the resulting image and normalizing
+    res_image = w * image
+    res_image = (res_image - np.min(res_image)) * 255 / np.max(res_image)
+    
+    return res_image
+
 # Reading the input
 image_filename = str(input()).rstrip()
 method = int(input())
@@ -98,7 +122,9 @@ if (method == 2):
     image_f = laplacian_filter(image, kernel_type, c).astype(np.uint8)
 
 if (method == 3):
-    a = 1 # MUDAR
+    sigma_r = float(input())
+    sigma_c = float(input())
+    image_f = vignette_filter(image, sigma_r, sigma_c)
 
 
 # Saving image if necessary
