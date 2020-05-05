@@ -70,9 +70,9 @@ def laplacian_filter(image, kernel_type, c):
     image = image[ce : image.shape[0] - ce , ce : image.shape[1] - ce]
 
     # Normalize, calculates final result and normalize again
-    res_image = (res_image - np.min(res_image)) * 255 / np.max(res_image)
+    res_image = (res_image - np.min(res_image)) * 255 / (np.max(res_image) - np.min(res_image))
     res_image = image + c*res_image
-    res_image = (res_image - np.min(res_image)) * 255 / np.max(res_image)
+    res_image = (res_image - np.min(res_image)) * 255 / (np.max(res_image) - np.min(res_image))
     
     return res_image
 
@@ -96,7 +96,7 @@ def vignette_filter(image, sigma_r, sigma_c):
     
     # Getting the resulting image and normalizing
     res_image = w * image
-    res_image = (res_image - np.min(res_image)) * 255 / np.max(res_image)
+    res_image = (res_image - np.min(res_image)) * 255 / (np.max(res_image) - np.min(res_image))
     
     return res_image
 
